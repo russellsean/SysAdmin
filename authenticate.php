@@ -1,69 +1,25 @@
-<!-- <?php
-// Initialize session
-session_start();
+<!--  This code will execute when form method is set to POST  -->
+<?php
+if(isset($_POST['user']) && isset($_POST['pass'])) {
+	$domain = "Lancastersd\\";
+	$user = $_POST['user'];
+	$pass = $_POST['pass'];
 
-function authenticate($user, $password) {
-	if(empty($user) || empty($password)) return false;
+	$ldapconfig['host'] = 'webmail.lancastersd.k12.wi.us';
+	$ldapconfig['port'] = 9000;
+	$ldapconfig['basedn'] = 'dc=lancastersd,dc=k12,dc=wi,dc=us';
 
-	// Active Directory server
-	$ldap_host = "webmail.lancastersd.k12.wi.us:9000";
+	$ds=ldap_connect($ldapconfig['host'], $ldapconfig['port']);
+	ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+	ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
 
-	// Active Directory DN
-	// $ldap_dn = "OU=Departments,DC=college,DC=school,DC=edu";
-
-	// Active Directory user group
-	// $ldap_user_group = "WebUsers";
-
-	// Active Directory manager group
-	// $ldap_manager_group = "WebManagers";
-
-	// Domain, for purposes of constructing $user
-	// $ldap_usr_dom = '@college.school.edu';
-
-	// connect to active directory
-	$ldap = ldap_connect($ldap_host);
-
-	// verify user and password
-	if($bind = @ldap_bind($ldap, $user.$ldap_usr_dom, $password)) {
-		// valid
-		// check presence in groups
-		$filter = "(sAMAccountName=".$user.")";
-		$attr = array("memberof");
-		$result = ldap_search($ldap, $ldap_dn, $filter, $attr) or exit("Unable to search LDAP server");
-		$entries = ldap_get_entries($ldap, $result);
-		ldap_unbind($ldap);
-
-		// check groups
-		foreach($entries[0]['memberof'] as $grps) {
-			// is manager, break loop
-			if(strpos($grps, $ldap_manager_group)) { $access = 2; break; }
-
-			// is user
-			if(strpos($grps, $ldap_user_group)) $access = 1;
-		}
-
-		if($access != 0) {
-			// establish session variables
-			$_SESSION['user'] = $user;
-			$_SESSION['access'] = $access;
-			return true;
-		} else {
-			// user has no rights
-			return false;
-		}
-
+	$dn="ou=Tech Accounts,".$ldapconfig['basedn'];
+	$bind=ldap_bind($ds, $domain.$user, $pass);
+	$isITuser = ldap_search($bind,$dn,'(&(objectClass=User)(sAMAccountName=' . $user. '))');
+	if ($isITuser) {
+	    echo("Login correct");
 	} else {
-		// invalid name or password
-		return false;
+	    echo("Login incorrect");
 	}
 }
-?> -->
-
-<html>
- <head>
-  <title>PHP Test</title>
- </head>
- <body>
- <?php echo '<p>Hello World</p>'; ?> 
- </body>
-</html>
+?>
