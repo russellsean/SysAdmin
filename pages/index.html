@@ -26,7 +26,7 @@
           <div class="modal-dialog">
                 <div class="loginmodal-container">
                     <h1>Login to SysAdmin</h1><br>
-                  <form action="authenticate.php" method="post">
+                  <form>
                     <input type="text" name="user" placeholder="Username">
                     <input type="password" name="pass" placeholder="Password">
                     <input type="submit" name="login" class="login loginmodal-submit" value="Login">
@@ -34,19 +34,6 @@
                 </div>
             </div>
           </div>
-
-    <!-- Login Javascript -->
-    <script>
-    function login(user, pass) {
-        if(user && pass) {
-            console.log("here")
-        }
-        else {
-            return false;
-        }
-    };
-    </script>
-
 <!-- Page/Wrapper -->
 <body>
 
@@ -61,7 +48,7 @@
                     </a>
                 </li>
                 <li>
-                    <a data-toggle="modal" data-target="#login-modal">Login</a>
+                    <a href="#" data-toggle="modal" data-target="#login-modal">Login</a>
                 </li>
                 <li>
                     <a href="#">Shortcuts</a>
